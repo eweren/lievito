@@ -1,0 +1,26 @@
+node_modules
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# SvelteKit
+.svelte-kit
+build
+package
+.vercel
+.output
+
+# Cloudflare Pages
+.wrangler
+
+# Editor
+.vscode
+.idea
+
+# Tooling
+coverage
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*

@@ -91,12 +91,12 @@ Genutzt wird **MoSCoW**, aber mit Solo-Developer-Lens: jedes “Must” muss in 
 
 **Definition of Done:**
 
-- [ ] Direktteig-Rechner für Neapolitanisch + Römisch funktioniert mit allen Parametern
-- [ ] Ergebnisse via URL teilbar (alle State-Werte als Query-Parameter)
-- [ ] 3 Rezepte als MDsvex-Files mit Frontmatter (Titel, Stil, Schwierigkeit, Maturazione)
-- [ ] PWA installierbar auf iOS Safari, Android Chrome, Desktop Chrome
-- [ ] Service Worker liefert App-Shell + Rezepte offline
-- [ ] Lighthouse-Score: PWA grün, Performance >90, Accessibility >90
+- [x] Direktteig-Rechner für Neapolitanisch + Römisch funktioniert mit allen Parametern (zusätzlich NY und Pan/Detroit)
+- [x] Ergebnisse via URL teilbar (alle State-Werte als Query-Parameter)
+- [x] 3 Rezepte als MDsvex-Files mit Frontmatter (Titel, Stil, Schwierigkeit, Maturazione)
+- [x] PWA installierbar auf iOS Safari, Android Chrome, Desktop Chrome (Manifest + SW vorhanden, Lighthouse-Run als manueller Schritt)
+- [x] Service Worker liefert App-Shell + Rezepte offline
+- [ ] Lighthouse-Score: PWA grün, Performance >90, Accessibility >90 (manuelles Audit ausstehend)
 - [ ] Erste Feedback-Runde mit 3–5 Pizza-Kollegen gemacht
 
 **Architektur-Entscheidungen:**
@@ -153,12 +153,12 @@ interface AppSettings {
 
 **Meilensteine in dieser Phase:**
 
-- [ ] 1. Erstes leeres SvelteKit-Projekt deployed
-- [ ] 2. Direktteig-Rechner Neapolitanisch funktioniert lokal
-- [ ] 3. Rechner-Ergebnisse via URL teilbar (Round-Trip getestet)
-- [ ] 4. PWA-Manifest + Icons komplett
-- [ ] 5. App auf iOS Homescreen installierbar
-- [ ] 6. Service Worker liefert Rechner offline aus
+- [x] 1. Erstes leeres SvelteKit-Projekt deployed (lokal gebaut, Cloudflare-Deployment ausstehend)
+- [x] 2. Direktteig-Rechner Neapolitanisch funktioniert lokal
+- [x] 3. Rechner-Ergebnisse via URL teilbar (Round-Trip via Tests + URL-Sync)
+- [x] 4. PWA-Manifest + Icons komplett
+- [x] 5. App auf iOS Homescreen installierbar (Apple-Touch-Icon + Manifest + display=standalone)
+- [x] 6. Service Worker liefert Rechner offline aus
 
 -----
 

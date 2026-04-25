@@ -1,6 +1,9 @@
 <script lang="ts">
   import RecipeCard from '$lib/components/RecipeCard.svelte';
   import { RECIPES } from '$lib/recipes';
+  import { favorites } from '$lib/state/favorites.svelte';
+
+  const favList = $derived(RECIPES.filter((r) => favorites.recipeSlugs.includes(r.slug)));
 </script>
 
 <svelte:head>
@@ -20,11 +23,25 @@
     </p>
   </header>
 
-  <div class="grid">
-    {#each RECIPES as recipe (recipe.slug)}
-      <RecipeCard {recipe} />
-    {/each}
-  </div>
+  {#if favList.length}
+    <section class="section">
+      <h2 class="section-title">Gemerkte Rezepte</h2>
+      <div class="grid">
+        {#each favList as recipe (recipe.slug)}
+          <RecipeCard {recipe} />
+        {/each}
+      </div>
+    </section>
+  {/if}
+
+  <section class="section">
+    {#if favList.length}<h2 class="section-title">Alle Rezepte</h2>{/if}
+    <div class="grid">
+      {#each RECIPES as recipe (recipe.slug)}
+        <RecipeCard {recipe} />
+      {/each}
+    </div>
+  </section>
 </div>
 
 <style>
@@ -47,5 +64,13 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
     gap: var(--space-4);
+  }
+  .section + .section {
+    margin-top: var(--space-8);
+  }
+  .section-title {
+    margin-bottom: var(--space-4);
+    font-size: var(--text-xl);
+    color: var(--color-text-muted);
   }
 </style>

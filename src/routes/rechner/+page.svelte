@@ -11,23 +11,33 @@
   import {
     calculator,
     calculatorUrlConfig,
-    defaultInput
+    defaultInput,
+    isDefaultInput
   } from '$lib/state/calculator.svelte';
   import {
     readInitialFromUrl,
     writeStateToUrl
   } from '$lib/state/url-state.svelte';
+  import { saveLastCalculation, loadLastCalculation } from '$lib/state/favorites.svelte';
+  import { page } from '$app/state';
   import type { DoughStyle } from '$lib/types/schema';
 
-  // Initial-State aus URL ziehen, dann Reaktivität.
+  // Initial-State: URL hat Vorrang. Wenn die URL leer ist, lade den
+  // zuletzt genutzten Setup aus localStorage (sofern vorhanden).
   onMount(() => {
-    calculator.input = readInitialFromUrl(calculatorUrlConfig);
+    if (page.url.search.length > 0) {
+      calculator.input = readInitialFromUrl(calculatorUrlConfig);
+    } else {
+      const last = loadLastCalculation();
+      if (last) calculator.input = last;
+    }
   });
 
-  // URL-Schreib-Effect.
+  // URL-Schreib-Effect + persistenter Last-Setup.
   $effect(() => {
     if (!browser) return;
     writeStateToUrl(calculator.input, calculatorUrlConfig);
+    if (!isDefaultInput(calculator.input)) saveLastCalculation(calculator.input);
   });
 
   const tabList = $derived(STYLE_LIST.map((s) => ({ id: s.id, label: s.label })));

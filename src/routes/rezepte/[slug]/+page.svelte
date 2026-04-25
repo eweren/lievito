@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { PageProps } from './$types';
+  import { favorites } from '$lib/state/favorites.svelte';
 
   let { data }: PageProps = $props();
   const recipe = $derived(data.recipe);
+  const isFavorite = $derived(favorites.has(recipe.slug));
 
   const STYLE_LABELS: Record<string, string> = {
     neapoletana: 'Neapoletana',
@@ -65,8 +67,16 @@
       {/if}
       <div><dt>Schwierigkeit</dt><dd>{recipe.difficulty}</dd></div>
     </dl>
-    <p>
+    <p class="actions-row">
       <a class="cta" href={calculatorLink()}>Werte im Rechner öffnen →</a>
+      <button
+        class="fav"
+        type="button"
+        onclick={() => favorites.toggle(recipe.slug)}
+        aria-pressed={isFavorite}
+      >
+        {isFavorite ? '★ Gemerkt' : '☆ Merken'}
+      </button>
     </p>
   </header>
 
@@ -138,6 +148,29 @@
   .cta:hover {
     background: var(--color-accent-hover);
     color: var(--color-pergamena);
+  }
+  .actions-row {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: var(--space-6);
+  }
+  .actions-row .cta {
+    margin-top: 0;
+  }
+  .fav {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+  }
+  .fav:hover {
+    background: var(--color-surface);
+  }
+  .fav[aria-pressed='true'] {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
   .prose {
     line-height: 1.7;

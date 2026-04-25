@@ -8,6 +8,22 @@ Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Added
 
+- **Phase 4 — Dolce (Polish):**
+  - 13 weitere Rezepte (insgesamt 16): Poolish-Neapoletana, Biga-Romana,
+    NY-Style-Klassiker, Detroit-Pan, Pinsa Romana, Teglia Romana
+    (Bonci-Style), Sourdough-Neapoletana, Grill-Pizza, Focaccia Genovese,
+    Sizilianische Sfincione, 30 % Vollkorn, 4-Stunden-Schnellteig,
+    Canotto-Style.
+  - ZIP-Export inkl. Fotos via JSZip (`downloadZipExport`/`readZipImportFile`):
+    Manifest-JSON ohne Foto-Daten + `photos/<id>.jpg` für effiziente Größen.
+    Auto-Format-Erkennung beim Import (`.json` vs. `.zip`).
+  - Onboarding-Modal (`src/lib/components/Onboarding.svelte`) mit 4 Slides,
+    persistiert im localStorage, `prefers-reduced-motion`-respektierend.
+  - A11y-Polish: Skip-Link (sichtbar erst bei Focus), `tabindex="-1"` an
+    `<main>`, `aria-valuetext` an allen Slidern, Reduced-Motion-Block in
+    `app.css`.
+  - Dynamische OG-Images via Cloudflare-Function `/api/og` (SVG, 24h-Cache),
+    eingebunden in Rezept- und Rechner-Seiten.
 - **Phase 3 — Contorno (KI + Push):**
   - Cloudflare Pages Function (`functions/api/pizzaiolo.ts`) als KI-Endpunkt:
     streamt Anthropic-Messages via SSE, IP-Rate-Limit (20/Tag) und globaler

@@ -1,6 +1,9 @@
-// JSON-Export/Import-Bundle. Fotos werden hier als DataURL serialisiert,
-// damit der Export ein einziger File ist. ZIP-Variante kommt in Phase 4.
+// JSON-Export/Import-Bundle und ZIP-Export inkl. Fotos.
+// JSON: Fotos als DataURL für maximale Portabilität in einem File.
+// ZIP: Manifest-JSON ohne Foto-Daten + photos/<id>.jpg für effizienten
+// Export großer Backjournals (Phase 4).
 
+import JSZip from 'jszip';
 import { CURRENT_SCHEMA_VERSION } from '$lib/types/schema';
 import type { ExportBundle, Settings } from '$lib/types/schema';
 import { getDb } from './index';
@@ -68,6 +71,122 @@ function triggerDownload(blob: Blob, filename: string) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * ZIP-Export: Manifest.json ohne Foto-Daten + photos/<id>.jpg.
+ * Roundtrip-tauglich mit `importZip()`.
+ */
+export async function downloadZipExport(): Promise<string> {
+  const db = getDb();
+  const [bakes, photos, timers, chats, settings] = await Promise.all([
+    db.bakes.toArray(),
+    db.photos.toArray(),
+    db.timers.toArray(),
+    db.chats.toArray(),
+    db.settings.toArray()
+  ]);
+
+  const manifest = {
+    exportVersion: 1,
+    exportedAt: Date.now(),
+    appVersion: APP_VERSION,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    bakes,
+    photoMeta: photos.map((p) => ({
+      id: p.id,
+      bakeId: p.bakeId,
+      width: p.width,
+      height: p.height,
+      takenAt: p.takenAt,
+      file: `photos/${p.id}.jpg`
+    })),
+    timerSessions: timers,
+    chatMessages: chats.length ? chats : undefined,
+    settings: settings[0] ?? null
+  };
+
+  const zip = new JSZip();
+  zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+  const photosFolder = zip.folder('photos');
+  if (photosFolder) {
+    for (const photo of photos) {
+      photosFolder.file(`${photo.id}.jpg`, photo.blob);
+    }
+  }
+  const blob = await zip.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 6 }
+  });
+  const today = new Date().toISOString().split('T')[0];
+  const filename = `lievito-export-${today}.zip`;
+  triggerDownload(blob, filename);
+  return filename;
+}
+
+interface ZipManifest {
+  exportVersion: number;
+  exportedAt: number;
+  appVersion: string;
+  schemaVersion: number;
+  bakes: ExportBundle['bakes'];
+  photoMeta: {
+    id: string;
+    bakeId: string;
+    width: number;
+    height: number;
+    takenAt: number;
+    file: string;
+  }[];
+  timerSessions: ExportBundle['timerSessions'];
+  chatMessages?: ExportBundle['chatMessages'];
+  settings?: Settings | null;
+}
+
+export async function readZipImportFile(file: File): Promise<ExportBundle> {
+  const zip = await JSZip.loadAsync(file);
+  const manifestFile = zip.file('manifest.json');
+  if (!manifestFile) throw new Error('manifest.json fehlt im ZIP.');
+  const manifest = JSON.parse(await manifestFile.async('string')) as ZipManifest;
+  if (manifest.exportVersion !== 1) {
+    throw new Error(`Unbekannte Export-Version: ${manifest.exportVersion}`);
+  }
+
+  const photos: ExportBundle['photos'] = [];
+  for (const meta of manifest.photoMeta) {
+    const f = zip.file(meta.file);
+    if (!f) continue;
+    const blob = await f.async('blob');
+    const dataUrl = await blobToDataURL(blob);
+    photos.push({
+      id: meta.id,
+      bakeId: meta.bakeId,
+      dataUrl,
+      width: meta.width,
+      height: meta.height,
+      takenAt: meta.takenAt
+    });
+  }
+
+  return {
+    exportVersion: 1,
+    exportedAt: manifest.exportedAt,
+    appVersion: manifest.appVersion,
+    schemaVersion: manifest.schemaVersion,
+    bakes: manifest.bakes,
+    photos,
+    timerSessions: manifest.timerSessions,
+    chatMessages: manifest.chatMessages,
+    settings:
+      manifest.settings ??
+      ({
+        schemaVersion: CURRENT_SCHEMA_VERSION,
+        units: 'metric',
+        theme: 'auto',
+        defaultStyle: 'neapoletana'
+      } as Settings)
+  };
 }
 
 export type ImportMode = 'merge' | 'replace';

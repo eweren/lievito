@@ -1,7 +1,15 @@
 <script lang="ts">
   import Button from '$lib/components/Button.svelte';
   import Card from '$lib/components/Card.svelte';
-  import { downloadExport, importBundle, readImportFile, type ImportMode, type ImportSummary } from '$lib/db/export';
+  import {
+    downloadExport,
+    downloadZipExport,
+    importBundle,
+    readImportFile,
+    readZipImportFile,
+    type ImportMode,
+    type ImportSummary
+  } from '$lib/db/export';
 
   let mode = $state<ImportMode>('merge');
   let summary = $state<ImportSummary | null>(null);
@@ -21,6 +29,18 @@
     }
   }
 
+  async function onZipExport() {
+    busy = true;
+    error = null;
+    try {
+      exportedFile = await downloadZipExport();
+    } catch (e) {
+      error = (e as Error).message ?? 'ZIP-Export fehlgeschlagen';
+    } finally {
+      busy = false;
+    }
+  }
+
   async function onImport(event: Event) {
     const input = event.currentTarget as HTMLInputElement;
     const file = input.files?.[0];
@@ -29,7 +49,9 @@
     error = null;
     summary = null;
     try {
-      const bundle = await readImportFile(file);
+      const bundle = file.name.toLowerCase().endsWith('.zip')
+        ? await readZipImportFile(file)
+        : await readImportFile(file);
       summary = await importBundle(bundle, mode);
     } catch (e) {
       error = (e as Error).message ?? 'Import fehlgeschlagen';
@@ -60,7 +82,10 @@
       Chat-Verläufe und Einstellungen. Format-Version: 1.
     </p>
     <div class="actions">
-      <Button onclick={onExport} disabled={busy}>JSON-Export herunterladen</Button>
+      <Button onclick={onExport} disabled={busy}>JSON-Export</Button>
+      <Button variant="ghost" onclick={onZipExport} disabled={busy}>
+        ZIP-Export inkl. Fotos
+      </Button>
     </div>
     {#if exportedFile}
       <p class="success">✓ {exportedFile} heruntergeladen.</p>
@@ -81,8 +106,14 @@
     </fieldset>
 
     <label class="upload">
-      <input type="file" accept="application/json,.json" onchange={onImport} disabled={busy} />
+      <input
+        type="file"
+        accept="application/json,.json,application/zip,.zip"
+        onchange={onImport}
+        disabled={busy}
+      />
     </label>
+    <p class="hint">JSON oder ZIP – Format wird automatisch erkannt.</p>
 
     {#if summary}
       <div class="summary success">

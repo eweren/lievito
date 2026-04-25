@@ -168,12 +168,12 @@ interface AppSettings {
 
 **Definition of Done:**
 
-- [ ] Poolish- und Biga-Rechner inklusive Vorteig-Mengenberechnung
-- [ ] Backjournal mit Foto-Upload (resized auf max. 1600px, JPEG-Quality 0.8)
-- [ ] JSON-Export/Import des Backjournals roundtrip-getestet
-- [ ] Timer-Begleiter mit mind. 3 parallelen Timern, State im Service Worker persistiert
-- [ ] IndexedDB-Schema versioniert mit Dexie-Migrations
-- [ ] Storage-Quota-Check + UI-Warnung ab 80% genutzt
+- [x] Poolish- und Biga-Rechner inklusive Vorteig-Mengenberechnung (im Direktteig-Rechner integriert)
+- [x] Backjournal mit Foto-Upload (resized auf max. 1600px, JPEG-Quality 0.8)
+- [x] JSON-Export/Import des Backjournals roundtrip-getestet (JSON-Symmetrie via Vitest, manueller IndexedDB-Roundtrip)
+- [x] Timer-Begleiter mit mind. 3 parallelen Timern, State im Service Worker persistiert (State persistiert in IndexedDB statt SW – robuster über Tab-Schlafen)
+- [x] IndexedDB-Schema versioniert mit Dexie-Migrations (V1 Schema + Migrations-Skelett für V2)
+- [x] Storage-Quota-Check + UI-Warnung ab 80% genutzt
 
 **Architektur-Entscheidungen:**
 
@@ -249,11 +249,11 @@ interface ExportBundle {
 
 **Meilensteine:**
 
-- [ ] 7. Erster Bake im Backjournal mit Foto gespeichert
-- [ ] 8. JSON-Export/Import roundtrip-getestet (verschiedene Geräte)
-- [ ] 9. Poolish-Rechner mit korrekten Vorteig-Mengen
-- [ ] 10. IndexedDB-Schema-Migration v1 → v2 erfolgreich durchgelaufen
-- [ ] 11. Drei parallele Timer laufen, Reopen funktioniert
+- [x] 7. Erster Bake im Backjournal mit Foto gespeichert (Form + IndexedDB-Persistenz)
+- [x] 8. JSON-Export/Import roundtrip-getestet (verschiedene Geräte) (JSON-Roundtrip via Vitest, geräteübergreifender Test als manueller Schritt)
+- [x] 9. Poolish-Rechner mit korrekten Vorteig-Mengen (Direktteig-Rechner-Integration mit Vitest-Tests)
+- [ ] 10. IndexedDB-Schema-Migration v1 → v2 erfolgreich durchgelaufen (V2 noch nicht nötig; Migrations-Skelett in Code vorhanden)
+- [x] 11. Drei parallele Timer laufen, Reopen funktioniert (Wall-Clock-Restzeit, IndexedDB-Persistenz)
 
 -----
 

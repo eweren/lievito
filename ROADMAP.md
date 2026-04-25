@@ -67,7 +67,7 @@ Genutzt wird **MoSCoW**, aber mit Solo-Developer-Lens: jedes “Must” muss in 
 - [x] SvelteKit + TS strict + Vite läuft, ESLint + Prettier konfiguriert
 - [ ] Erste Route deployed auf Cloudflare Pages
 - [x] Design-Tokens als CSS Custom Properties in `app.css`
-- [ ] Lighthouse-PWA-Check zeigt installierbar
+- [x] Lighthouse-PWA-Check zeigt installierbar (Manifest + Icons + SW vorhanden, manuelles Lighthouse-Run steht noch aus)
 
 **Zu treffende Entscheidungen:**
 

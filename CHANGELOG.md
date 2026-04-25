@@ -18,6 +18,13 @@ Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
     via `[data-theme="forno"]` plus `prefers-color-scheme`-Auto-Schalter, CSS-Layer
     (`tokens / reset / base / components / utilities`).
   - `app.html` mit Viewport + theme-color + Apple-PWA-Meta vorbereitet.
+  - PWA-Manifest mit Maskable- und Standard-Icons (192/512 + 180 Apple Touch +
+    OG-Default 1200x630), generiert via `scripts/generate-icons.mjs` (sharp).
+  - SvelteKit-Service-Worker (`src/service-worker.ts`): App-Shell-Cache,
+    Stale-While-Revalidate Runtime-Cache, exkludiert `/api/*`.
+  - Theme-State-Modul (`src/lib/state/theme.svelte.ts`) mit Runes + localStorage.
+  - Header- und Footer-Komponenten mit Forno-Modus-Toggle und
+    Local-First-Footer-Claim.
   - Landingpage `/` als minimaler Hero.
 - ROADMAP.md mit Checkbox-Struktur für Definition-of-Done und Meilensteine versehen
 - CHANGELOG.md angelegt

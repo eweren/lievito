@@ -1,0 +1,55 @@
+{
+  "name": "Lievito – die Pizzateig-Werkstatt",
+  "short_name": "Lievito",
+  "description": "Direktteig-Rechner, Backjournal und KI-Pizzaiolo. Lokal, offlinefähig, ohne Account.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#fbf8f3",
+  "theme_color": "#1a1208",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": ["food", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Direktteig-Rechner",
+      "short_name": "Rechner",
+      "url": "/rechner",
+      "description": "Pizzateig sofort berechnen"
+    },
+    {
+      "name": "Rezepte",
+      "short_name": "Rezepte",
+      "url": "/rezepte",
+      "description": "Kuratierte Rezepte"
+    }
+  ]
+}

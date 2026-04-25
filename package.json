@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "prettier --check . && eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.8",
@@ -29,6 +30,7 @@
     "mdsvex": "^0.12.3",
     "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.3.2",
+    "sharp": "^0.34.5",
     "svelte": "^5.16.0",
     "svelte-check": "^4.1.1",
     "typescript": "^5.7.2",

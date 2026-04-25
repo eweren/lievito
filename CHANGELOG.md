@@ -8,6 +8,28 @@ Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Added
 
+- **Phase 3 — Contorno (KI + Push):**
+  - Cloudflare Pages Function (`functions/api/pizzaiolo.ts`) als KI-Endpunkt:
+    streamt Anthropic-Messages via SSE, IP-Rate-Limit (20/Tag) und globaler
+    Tageslimit über KV, Kill-Switch via Env, 32-KB-Body-Limit, modellbar
+    konfigurierbar (`ANTHROPIC_MODEL`).
+  - System-Prompt im versionierten Modul (`src/lib/server/prompts/pizzaiolo.ts`).
+  - Browser-Streaming-Client (`src/lib/chat/client.ts`): SSE-Reader, ParseS-
+    Event-Stream, `text_delta`-Aggregation.
+  - Diagnose-Parser (`src/lib/chat/parse-diagnosis.ts`) inkl. 5 Vitest-Tests:
+    extrahiert ```json-Block, validiert Causes/Solutions-Schema, fällt bei
+    Bruch elegant zurück.
+  - Chat-CRUD in IndexedDB (`src/lib/db/chats.ts`), opt-in Persistenz, neue
+    Sitzung jederzeit startbar.
+  - `/pizzaiolo` Seite mit Datenschutz-Hinweis-Gate, Streaming-Cursor-Effekt,
+    strukturierter Diagnose-Anzeige (Likelihood-Badges, Solution-Steps).
+  - Lokale Push-Notifications via Service Worker (`src/lib/notify/index.ts`):
+    `SCHEDULE_NOTIFICATION` / `CANCEL_NOTIFICATION`-Messages, `notificationclick`-
+    Handler fokussiert offene Tabs, fällt sonst zurück auf `/timer`.
+  - Timer-Page registriert Notification beim Start, räumt bei Löschen auf.
+  - Mehl-Lexikon: Datenmodul mit 16 Mehlsorten (Tipo 00/0/1/2, Manitoba,
+    Vollkorn, Kamut, Dinkel, Roggen, Semola, Pinsa-Mix, Maisgrieß, Reis,
+    glutenfrei, Tipo 00 Bio), `/mehl` Seite mit Suche und Kategorien-Filter.
 - **Phase 2 — Secondo (V1):**
   - Dexie-Setup (`src/lib/db/index.ts`) mit Tabellen für Bakes, Photos, Timers,
     Chats, Settings. Migrations-Skelett (`db.version().upgrade()`) und

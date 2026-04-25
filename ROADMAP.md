@@ -64,10 +64,10 @@ Genutzt wird **MoSCoW**, aber mit Solo-Developer-Lens: jedes “Must” muss in 
 
 **Definition of Done:**
 
-- SvelteKit + TS strict + Vite läuft, ESLint + Prettier konfiguriert
-- Erste Route deployed auf Cloudflare Pages
-- Design-Tokens als CSS Custom Properties in `app.css`
-- Lighthouse-PWA-Check zeigt installierbar
+- [ ] SvelteKit + TS strict + Vite läuft, ESLint + Prettier konfiguriert
+- [ ] Erste Route deployed auf Cloudflare Pages
+- [ ] Design-Tokens als CSS Custom Properties in `app.css`
+- [ ] Lighthouse-PWA-Check zeigt installierbar
 
 **Zu treffende Entscheidungen:**
 
@@ -91,13 +91,13 @@ Genutzt wird **MoSCoW**, aber mit Solo-Developer-Lens: jedes “Must” muss in 
 
 **Definition of Done:**
 
-- Direktteig-Rechner für Neapolitanisch + Römisch funktioniert mit allen Parametern
-- Ergebnisse via URL teilbar (alle State-Werte als Query-Parameter)
-- 3 Rezepte als MDsvex-Files mit Frontmatter (Titel, Stil, Schwierigkeit, Maturazione)
-- PWA installierbar auf iOS Safari, Android Chrome, Desktop Chrome
-- Service Worker liefert App-Shell + Rezepte offline
-- Lighthouse-Score: PWA grün, Performance >90, Accessibility >90
-- Erste Feedback-Runde mit 3–5 Pizza-Kollegen gemacht
+- [ ] Direktteig-Rechner für Neapolitanisch + Römisch funktioniert mit allen Parametern
+- [ ] Ergebnisse via URL teilbar (alle State-Werte als Query-Parameter)
+- [ ] 3 Rezepte als MDsvex-Files mit Frontmatter (Titel, Stil, Schwierigkeit, Maturazione)
+- [ ] PWA installierbar auf iOS Safari, Android Chrome, Desktop Chrome
+- [ ] Service Worker liefert App-Shell + Rezepte offline
+- [ ] Lighthouse-Score: PWA grün, Performance >90, Accessibility >90
+- [ ] Erste Feedback-Runde mit 3–5 Pizza-Kollegen gemacht
 
 **Architektur-Entscheidungen:**
 
@@ -153,12 +153,12 @@ interface AppSettings {
 
 **Meilensteine in dieser Phase:**
 
-1. Erstes leeres SvelteKit-Projekt deployed
-1. Direktteig-Rechner Neapolitanisch funktioniert lokal
-1. Rechner-Ergebnisse via URL teilbar (Round-Trip getestet)
-1. PWA-Manifest + Icons komplett
-1. App auf iOS Homescreen installierbar
-1. Service Worker liefert Rechner offline aus
+- [ ] 1. Erstes leeres SvelteKit-Projekt deployed
+- [ ] 2. Direktteig-Rechner Neapolitanisch funktioniert lokal
+- [ ] 3. Rechner-Ergebnisse via URL teilbar (Round-Trip getestet)
+- [ ] 4. PWA-Manifest + Icons komplett
+- [ ] 5. App auf iOS Homescreen installierbar
+- [ ] 6. Service Worker liefert Rechner offline aus
 
 -----
 
@@ -168,12 +168,12 @@ interface AppSettings {
 
 **Definition of Done:**
 
-- Poolish- und Biga-Rechner inklusive Vorteig-Mengenberechnung
-- Backjournal mit Foto-Upload (resized auf max. 1600px, JPEG-Quality 0.8)
-- JSON-Export/Import des Backjournals roundtrip-getestet
-- Timer-Begleiter mit mind. 3 parallelen Timern, State im Service Worker persistiert
-- IndexedDB-Schema versioniert mit Dexie-Migrations
-- Storage-Quota-Check + UI-Warnung ab 80% genutzt
+- [ ] Poolish- und Biga-Rechner inklusive Vorteig-Mengenberechnung
+- [ ] Backjournal mit Foto-Upload (resized auf max. 1600px, JPEG-Quality 0.8)
+- [ ] JSON-Export/Import des Backjournals roundtrip-getestet
+- [ ] Timer-Begleiter mit mind. 3 parallelen Timern, State im Service Worker persistiert
+- [ ] IndexedDB-Schema versioniert mit Dexie-Migrations
+- [ ] Storage-Quota-Check + UI-Warnung ab 80% genutzt
 
 **Architektur-Entscheidungen:**
 
@@ -248,11 +248,12 @@ interface ExportBundle {
 - Schema-Migration ohne Backend = ein Bug in V2-Migration korrumpiert Daten unwiderruflich. Mitigation: Auto-Export vor jeder Migration in localStorage (oder Download-Aufforderung).
 
 **Meilensteine:**
-7. Erster Bake im Backjournal mit Foto gespeichert
-8. JSON-Export/Import roundtrip-getestet (verschiedene Geräte)
-9. Poolish-Rechner mit korrekten Vorteig-Mengen
-10. IndexedDB-Schema-Migration v1 → v2 erfolgreich durchgelaufen
-11. Drei parallele Timer laufen, Reopen funktioniert
+
+- [ ] 7. Erster Bake im Backjournal mit Foto gespeichert
+- [ ] 8. JSON-Export/Import roundtrip-getestet (verschiedene Geräte)
+- [ ] 9. Poolish-Rechner mit korrekten Vorteig-Mengen
+- [ ] 10. IndexedDB-Schema-Migration v1 → v2 erfolgreich durchgelaufen
+- [ ] 11. Drei parallele Timer laufen, Reopen funktioniert
 
 -----
 
@@ -262,13 +263,13 @@ interface ExportBundle {
 
 **Definition of Done:**
 
-- KI-Route `/api/pizzaiolo` als Cloudflare-Pages-Function mit Streaming
-- Rate-Limiting: max. 20 Anfragen pro IP pro 24h, via KV-Store
-- Cloudflare Turnstile vor erster Anfrage pro Session
-- Strukturierter Output (Ursachen + Lösungen) via System-Prompt + JSON-Mode
-- Chat-Verlauf optional in IndexedDB
-- Web-Push funktioniert auf Android Chrome + Desktop, iOS ab 16.4 bei installierter PWA
-- Mehl-Lexikon mit 15+ Mehlsorten
+- [ ] KI-Route `/api/pizzaiolo` als Cloudflare-Pages-Function mit Streaming
+- [ ] Rate-Limiting: max. 20 Anfragen pro IP pro 24h, via KV-Store
+- [ ] Cloudflare Turnstile vor erster Anfrage pro Session
+- [ ] Strukturierter Output (Ursachen + Lösungen) via System-Prompt + JSON-Mode
+- [ ] Chat-Verlauf optional in IndexedDB
+- [ ] Web-Push funktioniert auf Android Chrome + Desktop, iOS ab 16.4 bei installierter PWA
+- [ ] Mehl-Lexikon mit 15+ Mehlsorten
 
 **Architektur-Entscheidungen:**
 
@@ -305,10 +306,11 @@ interface ChatMessage {
 - Datenschutz: bei jeder KI-Anfrage gehen Nutzerdaten an Anthropic. Klar im UI sagen, eigener Hinweis-Screen vor erster Nutzung.
 
 **Meilensteine:**
-12. Erste Streaming-KI-Antwort live im Browser
-13. Rate-Limit pro IP nachweislich greift (Test: 21. Anfrage geblockt)
-14. Push-Notification weckt bei Stockgare-Ende auf Android
-15. Mehl-Lexikon-Seite mit Such- und Filter-Funktion live
+
+- [ ] 12. Erste Streaming-KI-Antwort live im Browser
+- [ ] 13. Rate-Limit pro IP nachweislich greift (Test: 21. Anfrage geblockt)
+- [ ] 14. Push-Notification weckt bei Stockgare-Ende auf Android
+- [ ] 15. Mehl-Lexikon-Seite mit Such- und Filter-Funktion live
 
 -----
 
@@ -318,15 +320,15 @@ interface ChatMessage {
 
 **Definition of Done:**
 
-- Lighthouse: Performance >95, Accessibility 100, SEO >95, PWA grün
-- Vollständige Tastaturnavigation, alle Interaktionen Screenreader-fähig
-- Kontraste WCAG AA für alle Text-Background-Kombinationen
-- Onboarding-Screen für Erstnutzer, Empty-States für leeres Backjournal
-- Microinteractions: Slider-Haptik, Button-Press-Feedback, sanfte Transitions
-- 15+ Rezepte, jeweils mit kurzem “Warum”-Abschnitt
-- ZIP-Export inkl. Fotos via JSZip
-- Strukturierte Daten (Schema.org Recipe) für SEO
-- Open-Graph-Bilder für Rezept- und Rechner-Sharing dynamisch generiert
+- [ ] Lighthouse: Performance >95, Accessibility 100, SEO >95, PWA grün
+- [ ] Vollständige Tastaturnavigation, alle Interaktionen Screenreader-fähig
+- [ ] Kontraste WCAG AA für alle Text-Background-Kombinationen
+- [ ] Onboarding-Screen für Erstnutzer, Empty-States für leeres Backjournal
+- [ ] Microinteractions: Slider-Haptik, Button-Press-Feedback, sanfte Transitions
+- [ ] 15+ Rezepte, jeweils mit kurzem “Warum”-Abschnitt
+- [ ] ZIP-Export inkl. Fotos via JSZip
+- [ ] Strukturierte Daten (Schema.org Recipe) für SEO
+- [ ] Open-Graph-Bilder für Rezept- und Rechner-Sharing dynamisch generiert
 
 **Architektur-Entscheidungen:**
 
@@ -343,11 +345,12 @@ interface ChatMessage {
 - A11y-Tests mit Screenreader sind aufwendig. Plane echte Stunden ein.
 
 **Meilensteine:**
-16. Lighthouse-Vollscore auf Mobile + Desktop erreicht
-17. Tab-Navigation durch komplette App ohne Maus
-18. ZIP-Export inkl. 50 Fotos roundtrip-getestet
-19. 15. Rezept veröffentlicht
-20. OG-Image dynamisch generiert für geteilten Rechner-Link
+
+- [ ] 16. Lighthouse-Vollscore auf Mobile + Desktop erreicht
+- [ ] 17. Tab-Navigation durch komplette App ohne Maus
+- [ ] 18. ZIP-Export inkl. 50 Fotos roundtrip-getestet
+- [ ] 19. 15. Rezept veröffentlicht
+- [ ] 20. OG-Image dynamisch generiert für geteilten Rechner-Link
 
 -----
 

@@ -24,6 +24,10 @@
     return `/rechner?${params.toString()}`;
   }
 
+  const ogImage = $derived(
+    `/api/og?title=${encodeURIComponent(recipe.title)}&badge=${encodeURIComponent(STYLE_LABELS[recipe.style] ?? 'Pizza')}&subtitle=${encodeURIComponent(`${recipe.maturationHours} h Maturazione · ${recipe.difficulty}`)}`
+  );
+
   // JSON-LD strukturierte Daten für SEO.
   const jsonLd = $derived({
     '@context': 'https://schema.org/',
@@ -45,6 +49,11 @@
   <meta property="og:title" content={recipe.title} />
   <meta property="og:description" content={recipe.excerpt} />
   <meta property="og:type" content="article" />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content={ogImage} />
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>

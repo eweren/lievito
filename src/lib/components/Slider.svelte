@@ -42,6 +42,7 @@
       {max}
       {step}
       bind:value
+      aria-valuetext="{display}{suffix}"
       aria-describedby={description ? `${id}-desc` : undefined}
     />
     <output for={id} class="value">{display}<span class="suffix">{suffix}</span></output>

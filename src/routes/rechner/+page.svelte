@@ -93,6 +93,13 @@
     name="description"
     content="Pizzateig-Rechner für Neapoletana, Romana, NY und Pan/Detroit. Idratazione, Salz, Hefe, Maturazione – alle Werte teilbar via URL."
   />
+  <meta property="og:title" content="Direktteig-Rechner · Lievito" />
+  <meta property="og:description" content="Pizzateig in Bäckerprozent, sofort teilbar via URL." />
+  <meta
+    property="og:image"
+    content="/api/og?title=Direktteig-Rechner&badge=Rechner&subtitle=Pizzateig%20in%20B%C3%A4ckerprozent"
+  />
+  <meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <div class="container">

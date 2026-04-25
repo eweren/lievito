@@ -5,6 +5,11 @@
   import EmptyState from '$lib/components/EmptyState.svelte';
   import Timer from '$lib/components/Timer.svelte';
   import { listTimers, startTimer, deleteTimer } from '$lib/db/timers';
+  import {
+    cancelLocalNotification,
+    requestPermission,
+    scheduleLocalNotification
+  } from '$lib/notify';
   import type { TimerSession } from '$lib/types/schema';
 
   let timers = $state<TimerSession[]>([]);
@@ -24,14 +29,7 @@
   });
 
   async function requestNotificationPermission() {
-    if (typeof Notification === 'undefined') return;
-    if (Notification.permission === 'default') {
-      try {
-        await Notification.requestPermission();
-      } catch {
-        /* ignore */
-      }
-    }
+    await requestPermission();
   }
 
   function addStep() {
@@ -47,11 +45,23 @@
       label,
       steps: steps.map((s) => ({ label: s.label, durationSec: Math.round(s.durationMin * 60) }))
     });
+    // Lokale Notification fürs Ende des ersten Schritts planen.
+    const firstStep = session.steps[0];
+    if (firstStep?.startedAt && firstStep.durationSec > 0) {
+      await scheduleLocalNotification({
+        id: session.id,
+        fireAt: firstStep.startedAt + firstStep.durationSec * 1000,
+        title: `Lievito · ${label}`,
+        body: `${firstStep.label} ist fertig.`,
+        tag: `timer-${session.id}`
+      });
+    }
     timers = [session, ...timers];
   }
 
   async function remove(id: string) {
     await deleteTimer(id);
+    await cancelLocalNotification(id);
     timers = timers.filter((t) => t.id !== id);
   }
 

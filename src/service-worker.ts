@@ -80,8 +80,70 @@ async function handle(request: Request): Promise<Response> {
   return cached ?? network;
 }
 
-sw.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') sw.skipWaiting();
+interface ScheduleNotificationMessage {
+  type: 'SCHEDULE_NOTIFICATION';
+  id: string;
+  fireAt: number; // ms-Epoch
+  title: string;
+  body: string;
+  tag?: string;
+}
+
+interface CancelNotificationMessage {
+  type: 'CANCEL_NOTIFICATION';
+  id: string;
+}
+
+const scheduledTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
+sw.addEventListener('message', (event: ExtendableMessageEvent) => {
+  if (event.data === 'SKIP_WAITING') {
+    sw.skipWaiting();
+    return;
+  }
+  const data = event.data as
+    | ScheduleNotificationMessage
+    | CancelNotificationMessage
+    | undefined;
+  if (!data || typeof data !== 'object') return;
+
+  if (data.type === 'SCHEDULE_NOTIFICATION') {
+    const delay = Math.max(0, data.fireAt - Date.now());
+    const existing = scheduledTimeouts.get(data.id);
+    if (existing) clearTimeout(existing);
+    const handle = setTimeout(() => {
+      scheduledTimeouts.delete(data.id);
+      sw.registration
+        .showNotification(data.title, {
+          body: data.body,
+          tag: data.tag ?? data.id,
+          icon: '/icons/icon-192.png',
+          badge: '/icons/icon-192.png'
+        })
+        .catch(() => undefined);
+    }, delay);
+    scheduledTimeouts.set(data.id, handle);
+  }
+
+  if (data.type === 'CANCEL_NOTIFICATION') {
+    const existing = scheduledTimeouts.get(data.id);
+    if (existing) {
+      clearTimeout(existing);
+      scheduledTimeouts.delete(data.id);
+    }
+  }
+});
+
+sw.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    sw.clients.matchAll({ type: 'window' }).then((clients) => {
+      for (const client of clients) {
+        if ('focus' in client) return client.focus();
+      }
+      return sw.clients.openWindow('/timer');
+    })
+  );
 });
 
 export {};

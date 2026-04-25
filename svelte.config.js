@@ -25,6 +25,13 @@ const config = {
     },
     serviceWorker: {
       register: true
+    },
+    prerender: {
+      handleHttpError: ({ path, referrer, message }) => {
+        // Warnen statt failen, damit verlinkte aber noch nicht implementierte
+        // Phase-2/3-Routen den Build nicht blockieren.
+        console.warn(`Prerender 404: ${path} (linked from ${referrer}) — ${message}`);
+      }
     }
   }
 };

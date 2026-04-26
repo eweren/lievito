@@ -1,24 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Lievito Logo">
-  <defs>
-    <radialGradient id="dough" cx="0.5" cy="0.45" r="0.55">
-      <stop offset="0" stop-color="#fbf2dc" />
-      <stop offset="1" stop-color="#e6c98f" />
-    </radialGradient>
-    <radialGradient id="crust" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0.7" stop-color="#c98a52" stop-opacity="0" />
-      <stop offset="1" stop-color="#7a4a25" stop-opacity="0.7" />
-    </radialGradient>
-  </defs>
-  <circle cx="32" cy="32" r="28" fill="url(#dough)" stroke="#7a4a25" stroke-width="1.5" />
-  <circle cx="32" cy="32" r="28" fill="url(#crust)" />
-  <!-- Tomatentupfer -->
-  <circle cx="22" cy="24" r="4" fill="#c8362b" />
-  <circle cx="40" cy="22" r="3.5" fill="#c8362b" />
-  <circle cx="44" cy="38" r="4.5" fill="#c8362b" />
-  <circle cx="24" cy="42" r="3" fill="#c8362b" />
-  <circle cx="32" cy="34" r="3.5" fill="#c8362b" />
-  <!-- Basilikum -->
-  <ellipse cx="33" cy="20" rx="2.5" ry="1.4" fill="#5a8341" transform="rotate(-25 33 20)" />
-  <ellipse cx="38" cy="44" rx="2.4" ry="1.3" fill="#5a8341" transform="rotate(20 38 44)" />
-  <ellipse cx="20" cy="32" rx="2.4" ry="1.3" fill="#5a8341" transform="rotate(-65 20 32)" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Lievito Logo">
+  <!-- Pergament-Hintergrund -->
+  <rect width="100" height="100" fill="#fbf3e3" />
+  <!-- Ring (Schüssel/Teig-Behälter) -->
+  <circle cx="50" cy="50" r="32" fill="none" stroke="#c8523a" stroke-width="3.2" />
+  <!-- Drei Lievito-Bläschen (großer Kreis unten, mittlerer oben, kleiner rechts) -->
+  <circle cx="50" cy="68" r="9" fill="#c8523a" />
+  <circle cx="46" cy="44" r="5.5" fill="#c8523a" />
+  <circle cx="59" cy="55" r="2.6" fill="#c8523a" />
 </svg>

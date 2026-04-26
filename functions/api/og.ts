@@ -32,19 +32,25 @@ function renderSvg({ title, subtitle, badge }: OgQuery): string {
   const safeSubtitle = escapeXml(subtitle ?? '');
   const safeBadge = badge ? escapeXml(badge) : null;
 
-  // 1200×630, beige Pergament-Hintergrund, große Display-Schrift.
+  // 1200×630, beige Pergament-Hintergrund, große Display-Schrift,
+  // rechts das Lievito-Logo (Ring + drei Bläschen).
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fbf8f3"/>
+      <stop offset="0" stop-color="#fbf3e3"/>
       <stop offset="1" stop-color="#f1e8d5"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <circle cx="980" cy="510" r="240" fill="#e6c98f" opacity="0.4"/>
-  <circle cx="220" cy="120" r="160" fill="#c8362b" opacity="0.12"/>
-  <text x="80" y="140" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-weight="500" fill="#c8362b" letter-spacing="6">LIEVITO</text>
+  <!-- Logo rechts: Ring + drei Bubbles -->
+  <g transform="translate(820 80)">
+    <circle cx="200" cy="200" r="190" fill="none" stroke="#c8523a" stroke-width="18"/>
+    <circle cx="200" cy="295" r="55" fill="#c8523a"/>
+    <circle cx="175" cy="155" r="34" fill="#c8523a"/>
+    <circle cx="260" cy="220" r="16" fill="#c8523a"/>
+  </g>
+  <text x="80" y="140" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-weight="500" fill="#c8523a" letter-spacing="6">LIEVITO</text>
   ${safeBadge ? `<text x="80" y="200" font-family="ui-monospace, monospace" font-size="22" fill="#5a8341" letter-spacing="4">${safeBadge.toUpperCase()}</text>` : ''}
   ${wrapTitle(safeTitle, 80, 280)}
   <text x="80" y="540" font-family="Inter, system-ui, sans-serif" font-size="32" fill="#5a3b1a">${safeSubtitle}</text>

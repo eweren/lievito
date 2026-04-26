@@ -19,7 +19,7 @@
 <header class="header">
   <div class="container header-inner">
     <a href="/" class="brand" aria-label="Lievito Startseite">
-      <span class="brand-mark" aria-hidden="true">L</span>
+      <img class="brand-mark" src="/favicon.svg" alt="" width="32" height="32" />
       <span class="brand-name">Lievito</span>
     </a>
     <nav aria-label="Hauptnavigation" class="nav">
@@ -79,15 +79,11 @@
     font-weight: 600;
   }
   .brand-mark {
-    display: inline-grid;
-    place-items: center;
     width: 2rem;
     height: 2rem;
     border-radius: var(--radius-md);
-    background: var(--color-accent);
-    color: var(--color-pergamena);
-    font-family: var(--font-display);
-    font-weight: 700;
+    background: var(--color-pergamena);
+    border: 1px solid var(--color-border);
   }
   .brand-name {
     font-size: var(--text-lg);

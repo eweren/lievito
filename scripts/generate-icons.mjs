@@ -21,14 +21,19 @@ const targets = [
   { size: 180, name: 'apple-touch-icon.png', maskable: false }
 ];
 
-const bg = { r: 251, g: 248, b: 243, alpha: 1 };
+// Pergament-Hintergrund (passt zum SVG); für maskable Icons brauchen wir
+// Sicherheits-Padding, weil Android-Launcher das Logo beschneiden.
+const bg = { r: 251, g: 243, b: 227, alpha: 1 };
 
 for (const target of targets) {
   if (target.maskable) {
-    // Maskable: Logo bei 72% mit Hintergrund-Padding
-    const logoSize = Math.round(target.size * 0.72);
-    const padding = Math.round((target.size - logoSize) / 2);
-    const logo = await sharp(svg).resize(logoSize, logoSize).png().toBuffer();
+    // Maskable: Logo bei 60% Größe mit Hintergrund-Padding (Safe-Zone-Regel).
+    const logoSize = Math.round(target.size * 0.6);
+    const offset = Math.round((target.size - logoSize) / 2);
+    const logo = await sharp(svg, { density: 512 })
+      .resize(logoSize, logoSize)
+      .png()
+      .toBuffer();
     await sharp({
       create: {
         width: target.size,
@@ -37,11 +42,11 @@ for (const target of targets) {
         background: bg
       }
     })
-      .composite([{ input: logo, top: padding, left: padding }])
+      .composite([{ input: logo, top: offset, left: offset }])
       .png({ quality: 90, compressionLevel: 9 })
       .toFile(resolve(iconsDir, target.name));
   } else {
-    await sharp(svg)
+    await sharp(svg, { density: 512 })
       .resize(target.size, target.size, {
         fit: 'contain',
         background: bg
@@ -52,15 +57,24 @@ for (const target of targets) {
   console.log(`✔ ${target.name} (${target.size}×${target.size})`);
 }
 
+// Auch ein 32x32 Favicon-PNG als Fallback für ältere Browser/Tab-Anzeigen.
+await sharp(svg, { density: 512 })
+  .resize(32, 32, { fit: 'contain', background: bg })
+  .png()
+  .toFile(resolve(root, 'static/favicon.png'));
+console.log('✔ favicon.png (32×32)');
+
 // OG-Default-Bild 1200x630
 const ogBg = await sharp({
-  create: { width: 1200, height: 630, channels: 4, background: { r: 251, g: 242, b: 220, alpha: 1 } }
-}).png().toBuffer();
+  create: { width: 1200, height: 630, channels: 4, background: bg }
+})
+  .png()
+  .toBuffer();
 
-const ogLogo = await sharp(svg).resize(360, 360).png().toBuffer();
+const ogLogo = await sharp(svg, { density: 512 }).resize(420, 420).png().toBuffer();
 
 await sharp(ogBg)
-  .composite([{ input: ogLogo, top: 135, left: 130 }])
+  .composite([{ input: ogLogo, top: 105, left: 130 }])
   .png({ quality: 90 })
   .toFile(resolve(root, 'static/og-default.png'));
 console.log('✔ og-default.png (1200×630)');

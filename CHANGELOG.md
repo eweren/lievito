@@ -6,6 +6,16 @@ Versionierung folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- Neues Logo / Favicon: Ring mit drei Lievito-Bläschen (Terracotta auf
+  Pergament). `static/favicon.svg` neu gezeichnet, alle PWA-Icons (192/512
+  /maskable/apple-touch) und `og-default.png` regeneriert. Header zeigt
+  jetzt das SVG-Logo statt des „L"-Glyph; OG-Function rendert das Logo
+  rechts in jedem dynamischen Sharing-Bild.
+- `theme_color` im Manifest auf `#c8523a` (Pomodoro), `background_color`
+  auf `#fbf3e3` (Pergament) angepasst.
+
 ### Added
 
 - **Phase 4 — Dolce (Polish):**

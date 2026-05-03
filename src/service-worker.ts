@@ -21,7 +21,18 @@ sw.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(STATIC_CACHE);
-      await cache.addAll(PRECACHE);
+      // `cache.addAll` ist all-or-nothing: ein einzelnes 404 lässt iOS Safari
+      // den gesamten SW-Install scheitern. Pro URL einzeln + tolerieren.
+      await Promise.all(
+        PRECACHE.map(async (url) => {
+          try {
+            const response = await fetch(url, { cache: 'reload' });
+            if (response.ok) await cache.put(url, response);
+          } catch {
+            /* einzelnes Asset darf fehlen */
+          }
+        })
+      );
       await sw.skipWaiting();
     })()
   );

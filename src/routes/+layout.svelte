@@ -4,6 +4,7 @@
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import Onboarding from '$lib/components/Onboarding.svelte';
+  import IosInstallHint from '$lib/components/IosInstallHint.svelte';
   import { applyThemeFromStorage } from '$lib/state/theme.svelte';
 
   let { children } = $props();
@@ -28,6 +29,7 @@
 </div>
 
 <Onboarding />
+<IosInstallHint />
 
 <style>
   .app-shell {

@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 
@@ -14,11 +14,12 @@ const config = {
   ],
   kit: {
     adapter: adapter({
-      pages: 'build',
-      assets: 'build',
-      fallback: 'index.html',
+      out: 'build',
       precompress: false,
-      strict: false
+      strict: false,
+      prerender: {
+        concurrency: 4
+      }
     }),
     alias: {
       $lib: 'src/lib'

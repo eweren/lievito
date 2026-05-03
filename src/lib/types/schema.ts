@@ -70,6 +70,7 @@ export interface DoughCalculationResult {
     yeast: number;
   };
   bulkFermentation: { hours: number; temp: number };
+  coldRetard?: { hours: number; temp: number };
   ballingTime: { hours: number; temp: number };
   warnings: string[];
 }

@@ -94,6 +94,44 @@ describe('calculateDirectDough', () => {
     expect(result.preFerment!.water).toBeCloseTo(result.preFerment!.flour * 0.45, 0);
   });
 
+  it('teilt Warmgare in Stock (~2/3) + Stück (~1/3) auf, Summe = Total', () => {
+    const result = calculateDirectDough(baseInput); // 24 h @ 20 °C
+    const sum = result.bulkFermentation.hours + result.ballingTime.hours;
+    expect(sum).toBe(24);
+    expect(result.bulkFermentation.hours).toBeGreaterThan(result.ballingTime.hours);
+    expect(result.bulkFermentation.temp).toBe(20);
+    expect(result.ballingTime.temp).toBe(20);
+    expect(result.coldRetard).toBeUndefined();
+  });
+
+  it('teilt kurze Warmgare 50/50 auf', () => {
+    const result = calculateDirectDough({ ...baseInput, maturationHours: 4, maturationTemp: 26 });
+    const sum = result.bulkFermentation.hours + result.ballingTime.hours;
+    expect(sum).toBe(4);
+    expect(result.bulkFermentation.hours).toBe(2);
+    expect(result.ballingTime.hours).toBe(2);
+  });
+
+  it('liefert Stock + Kaltretard + Stück bei Kaltgare', () => {
+    const result = calculateDirectDough({ ...baseInput, maturationHours: 48, maturationTemp: 4 });
+    expect(result.bulkFermentation.hours).toBe(1);
+    expect(result.bulkFermentation.temp).toBe(22);
+    expect(result.coldRetard).toBeDefined();
+    expect(result.coldRetard!.hours).toBe(45);
+    expect(result.coldRetard!.temp).toBe(4);
+    expect(result.ballingTime.hours).toBe(2);
+    expect(result.ballingTime.temp).toBe(22);
+    const total =
+      result.bulkFermentation.hours + result.coldRetard!.hours + result.ballingTime.hours;
+    expect(total).toBe(48);
+  });
+
+  it('warnt wenn Kaltgare zu kurz ist', () => {
+    const result = calculateDirectDough({ ...baseInput, maturationHours: 3, maturationTemp: 4 });
+    expect(result.coldRetard).toBeUndefined();
+    expect(result.warnings.some((w) => /Kaltgare/i.test(w))).toBe(true);
+  });
+
   it('warnt wenn Vorteig-Hydration alles Wasser frisst', () => {
     const result = calculateDirectDough({
       ...baseInput,

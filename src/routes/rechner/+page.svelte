@@ -40,6 +40,15 @@
     if (!isDefaultInput(calculator.input)) saveLastCalculation(calculator.input);
   });
 
+  // Hefe folgt automatisch aus Hefeart, Gesamt-Maturazione und Reife-Temperatur.
+  // Manuelles Drehen am Slider bleibt bis zur nächsten Änderung dieser drei Werte erhalten.
+  $effect(() => {
+    const hours = calculator.input.maturationHours;
+    const temp = calculator.input.maturationTemp;
+    const yeastType = calculator.input.yeastType;
+    calculator.input.yeastPercent = suggestYeastPercent({ hours, temp, yeastType });
+  });
+
   const tabList = $derived(STYLE_LIST.map((s) => ({ id: s.id, label: s.label })));
   const profile = $derived(getStyle(calculator.input.style));
 
@@ -49,15 +58,7 @@
     calculator.setStyle(id as DoughStyle);
   }
 
-  function applySuggestedYeast() {
-    calculator.input.yeastPercent = suggestYeastPercent({
-      hours: calculator.input.maturationHours,
-      temp: calculator.input.maturationTemp,
-      yeastType: calculator.input.yeastType
-    });
-  }
-
-  async function shareUrl() {
+async function shareUrl() {
     if (!browser) return;
     const url = window.location.href;
     if (navigator.share) {
@@ -215,9 +216,10 @@
           suffix="%"
           displayDigits={3}
         />
-        <div class="suggest">
-          <Button variant="ghost" onclick={applySuggestedYeast}>Hefe vorschlagen</Button>
-        </div>
+        <p class="hint">
+          Wird automatisch aus Hefeart, Maturazione und Reife-Temperatur berechnet. Slider erlaubt
+          Feinjustierung bis zur nächsten Änderung.
+        </p>
 
         <Slider
           label="Maturazione"
@@ -318,6 +320,12 @@
             <strong>Stockgare:</strong>
             {calculator.result.bulkFermentation.hours} h bei {calculator.result.bulkFermentation.temp} °C
           </li>
+          {#if calculator.result.coldRetard}
+            <li>
+              <strong>Kühlschrank-Reife:</strong>
+              {calculator.result.coldRetard.hours} h bei {calculator.result.coldRetard.temp} °C
+            </li>
+          {/if}
           <li>
             <strong>Stückgare:</strong>
             {calculator.result.ballingTime.hours} h bei {calculator.result.ballingTime.temp} °C
@@ -409,9 +417,10 @@
     font: inherit;
     color: var(--color-text);
   }
-  .suggest {
-    margin-top: -0.25rem;
-    margin-bottom: var(--space-2);
+  .hint {
+    margin: -0.25rem 0 var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
   }
   .actions {
     display: flex;

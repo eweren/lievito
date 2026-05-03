@@ -1,8 +1,9 @@
 // Direktteig- und Vorteig-Rechner.
 // Alle Mengen in Bäckerprozent: Mehl ist immer 100 %, alle anderen
-// Zutaten sind Anteile davon. Zur Schätzung der Hefemenge wird ein
-// einfaches Modell aus Stockgare-Stunden und Temperatur verwendet,
-// das gegen bekannte Referenz-Tabellen (z. B. AVPN) kalibriert ist.
+// Zutaten sind Anteile davon. `maturationHours` ist die Gesamt-Maturazione
+// (Stock + ggf. Kaltretard + Stück); die Aufteilung erfolgt regelbasiert
+// über `splitMaturation`. Die Hefemenge wird gegen die Gesamtdauer und
+// Temperatur kalibriert (Referenz: AVPN-Tabellen, 24 h @ 20 °C ≈ 0.1 % Frischhefe).
 
 import type {
   DoughCalculationInput,
@@ -53,7 +54,8 @@ export function calculateDirectDough(input: DoughCalculationInput): DoughCalcula
   const oil = input.oilPercent ? flour * (input.oilPercent / 100) : undefined;
   const sugar = input.sugarPercent ? flour * (input.sugarPercent / 100) : undefined;
 
-  const ballingTime = ballingTimeFor(input.maturationHours, input.maturationTemp);
+  const split = splitMaturation(input.maturationHours, input.maturationTemp);
+  if (split.warning) warnings.push(split.warning);
 
   if (input.preFerment === 'none') {
     return {
@@ -64,11 +66,9 @@ export function calculateDirectDough(input: DoughCalculationInput): DoughCalcula
       yeast: round(yeast, 2),
       oil: oil != null ? round(oil, 1) : undefined,
       sugar: sugar != null ? round(sugar, 1) : undefined,
-      bulkFermentation: {
-        hours: input.maturationHours,
-        temp: input.maturationTemp
-      },
-      ballingTime,
+      bulkFermentation: split.bulk,
+      coldRetard: split.coldRetard,
+      ballingTime: split.balling,
       warnings
     };
   }
@@ -82,7 +82,7 @@ export function calculateDirectDough(input: DoughCalculationInput): DoughCalcula
     oil,
     sugar,
     totalDough,
-    ballingTime,
+    split,
     warnings
   });
 }
@@ -96,12 +96,12 @@ interface PreFermentArgs {
   oil?: number;
   sugar?: number;
   totalDough: number;
-  ballingTime: { hours: number; temp: number };
+  split: MaturationSplit;
   warnings: string[];
 }
 
 function calculateWithPreFerment(args: PreFermentArgs): DoughCalculationResult {
-  const { input, flour, water, salt, yeast, oil, sugar, totalDough, ballingTime, warnings } = args;
+  const { input, flour, water, salt, yeast, oil, sugar, totalDough, split, warnings } = args;
   const ratio = clamp(input.preFermentRatio ?? 0.3, 0.05, 0.7);
   const preFermentFlour = flour * ratio;
 
@@ -146,11 +146,9 @@ function calculateWithPreFerment(args: PreFermentArgs): DoughCalculationResult {
       salt: round(mainSalt, 1),
       yeast: round(Math.max(0, mainYeast), 3)
     },
-    bulkFermentation: {
-      hours: input.maturationHours,
-      temp: input.maturationTemp
-    },
-    ballingTime,
+    bulkFermentation: split.bulk,
+    coldRetard: split.coldRetard,
+    ballingTime: split.balling,
     warnings
   };
 }
@@ -181,15 +179,46 @@ function defaultPreFermentRest(type: PreFermentType): { hours: number; temp: num
   }
 }
 
-function ballingTimeFor(hours: number, temp: number): { hours: number; temp: number } {
-  // Faustregel: Stockgare 1/3, Stückgare 2/3 bei Raumtemperatur ≥ 18 °C;
-  // bei kalter Reife eine Stückgare bei Raumtemperatur am Ende.
+interface MaturationSplit {
+  bulk: { hours: number; temp: number };
+  coldRetard?: { hours: number; temp: number };
+  balling: { hours: number; temp: number };
+  warning?: string;
+}
+
+// Teilt die Gesamt-Maturazione in Stock-, optionale Kalt- und Stückgare auf.
+// Warm (≥16 °C): klassisch lange Stockgare (2/3) + kürzere Stückgare (1/3);
+// bei sehr kurzen Garezeiten (≤6 h) 50/50.
+// Kalt (<16 °C): kurze warme Stockphase, lange Kühlschrank-Reife, warme Stückgare.
+function splitMaturation(total: number, temp: number): MaturationSplit {
   if (temp >= 16) {
-    const stueckgare = Math.max(2, Math.round(hours * (2 / 3)));
-    return { hours: stueckgare, temp };
+    if (total <= 6) {
+      const bulk = Math.max(1, Math.round(total / 2));
+      return {
+        bulk: { hours: bulk, temp },
+        balling: { hours: Math.max(1, total - bulk), temp }
+      };
+    }
+    const bulk = Math.ceil((total * 2) / 3);
+    return {
+      bulk: { hours: bulk, temp },
+      balling: { hours: Math.max(1, total - bulk), temp }
+    };
   }
-  // Kühlschrank-Reife: 2 h Stückgare bei 22 °C nach Ende der Stockgare
-  return { hours: 2, temp: 22 };
+  // Kaltgare braucht ≥ 4 h, sonst lohnt der Kühlschrank-Schritt nicht.
+  if (total < 4) {
+    return {
+      bulk: { hours: total, temp },
+      balling: { hours: 1, temp: 22 },
+      warning:
+        'Maturazione zu kurz für klassische Kaltgare. Erhöhe Total auf ≥ 4 h oder wähle wärmere Reife.'
+    };
+  }
+  return {
+    bulk: { hours: 1, temp: 22 },
+    coldRetard: { hours: total - 3, temp },
+    balling: { hours: 2, temp: 22 }
+  };
 }
 
 function collectWarnings(input: DoughCalculationInput): string[] {

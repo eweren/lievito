@@ -1,6 +1,13 @@
 <script lang="ts">
   import type { PageProps } from './$types';
   import { favorites } from '$lib/state/favorites.svelte';
+  import { goto } from '$app/navigation';
+  import { splitMaturation } from '$lib/dough/calculate';
+  import { STYLES } from '$lib/dough/styles';
+  import { timerFromSplit } from '$lib/timer/from-schedule';
+  import { startTimer } from '$lib/db/timers';
+  import { requestPermission, scheduleLocalNotification } from '$lib/notify';
+  import type { DoughStyle } from '$lib/types/schema';
 
   let { data }: PageProps = $props();
   const recipe = $derived(data.recipe);
@@ -12,6 +19,33 @@
     ny: 'New York',
     pan: 'Pan/Detroit'
   };
+
+  let starting = $state(false);
+
+  async function startMaturazioneTimer() {
+    if (starting || !recipe.maturationHours) return;
+    starting = true;
+    try {
+      await requestPermission();
+      const styleDefaults = STYLES[recipe.style as DoughStyle]?.defaults;
+      const temp = styleDefaults?.maturationTemp ?? 20;
+      const split = splitMaturation(recipe.maturationHours, temp);
+      const session = await startTimer(timerFromSplit(`Maturazione · ${recipe.title}`, split));
+      const firstStep = session.steps[0];
+      if (firstStep?.startedAt && firstStep.durationSec > 0) {
+        await scheduleLocalNotification({
+          id: session.id,
+          fireAt: firstStep.startedAt + firstStep.durationSec * 1000,
+          title: `Lievito · ${session.label}`,
+          body: `${firstStep.label} ist fertig.`,
+          tag: `timer-${session.id}`
+        });
+      }
+      await goto('/timer');
+    } finally {
+      starting = false;
+    }
+  }
 
   function calculatorLink(): string {
     const params = new URLSearchParams();
@@ -78,6 +112,16 @@
     </dl>
     <p class="actions-row">
       <a class="cta" href={calculatorLink()}>Werte im Rechner öffnen →</a>
+      {#if recipe.maturationHours}
+        <button
+          class="timer-cta"
+          type="button"
+          onclick={startMaturazioneTimer}
+          disabled={starting}
+        >
+          {starting ? 'Starte…' : '⏱ Timer starten'}
+        </button>
+      {/if}
       <button
         class="fav"
         type="button"
@@ -168,11 +212,20 @@
   .actions-row .cta {
     margin-top: 0;
   }
-  .fav {
+  .fav,
+  .timer-cta {
     padding: var(--space-2) var(--space-4);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     color: var(--color-text);
+    background: transparent;
+  }
+  .timer-cta:hover:not(:disabled) {
+    background: var(--color-surface);
+  }
+  .timer-cta:disabled {
+    opacity: 0.6;
+    cursor: progress;
   }
   .fav:hover {
     background: var(--color-surface);

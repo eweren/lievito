@@ -7,7 +7,12 @@
   import Button from '$lib/components/Button.svelte';
   import Tabs from '$lib/components/Tabs.svelte';
   import { STYLE_LIST, getStyle } from '$lib/dough/styles';
-  import { suggestYeastPercent } from '$lib/dough/calculate';
+  import { suggestYeastPercent, splitMaturation } from '$lib/dough/calculate';
+  import { formatYeast } from '$lib/dough/yeast-format';
+  import { timerFromSplit } from '$lib/timer/from-schedule';
+  import { startTimer } from '$lib/db/timers';
+  import { requestPermission, scheduleLocalNotification } from '$lib/notify';
+  import { goto } from '$app/navigation';
   import {
     calculator,
     calculatorUrlConfig,
@@ -85,6 +90,35 @@ async function shareUrl() {
       minimumFractionDigits: digits,
       maximumFractionDigits: digits
     });
+  }
+
+  let starting = $state(false);
+
+  async function startMaturazioneTimer() {
+    if (starting) return;
+    starting = true;
+    try {
+      await requestPermission();
+      const split = splitMaturation(
+        calculator.input.maturationHours,
+        calculator.input.maturationTemp
+      );
+      const input = timerFromSplit(`Maturazione (${profile.label})`, split);
+      const session = await startTimer(input);
+      const firstStep = session.steps[0];
+      if (firstStep?.startedAt && firstStep.durationSec > 0) {
+        await scheduleLocalNotification({
+          id: session.id,
+          fireAt: firstStep.startedAt + firstStep.durationSec * 1000,
+          title: `Lievito · ${session.label}`,
+          body: `${firstStep.label} ist fertig.`,
+          tag: `timer-${session.id}`
+        });
+      }
+      await goto('/timer');
+    } finally {
+      starting = false;
+    }
   }
 </script>
 
@@ -278,7 +312,7 @@ async function shareUrl() {
           <div><dt>Mehl</dt><dd>{fmt(calculator.result.flour)} g</dd></div>
           <div><dt>Wasser</dt><dd>{fmt(calculator.result.water)} g</dd></div>
           <div><dt>Salz</dt><dd>{fmt(calculator.result.salt, 1)} g</dd></div>
-          <div><dt>Hefe</dt><dd>{fmt(calculator.result.yeast, 2)} g</dd></div>
+          <div><dt>Hefe</dt><dd>{formatYeast(calculator.result.yeast, calculator.input.yeastType)}</dd></div>
           {#if calculator.result.oil != null}
             <div><dt>Olivenöl</dt><dd>{fmt(calculator.result.oil, 1)} g</dd></div>
           {/if}
@@ -294,7 +328,7 @@ async function shareUrl() {
           <dl class="amounts">
             <div><dt>Mehl</dt><dd>{fmt(calculator.result.preFerment.flour)} g</dd></div>
             <div><dt>Wasser</dt><dd>{fmt(calculator.result.preFerment.water)} g</dd></div>
-            <div><dt>Hefe</dt><dd>{fmt(calculator.result.preFerment.yeast, 3)} g</dd></div>
+            <div><dt>Hefe</dt><dd>{formatYeast(calculator.result.preFerment.yeast, calculator.input.yeastType)}</dd></div>
             <div class="total"><dt>Vorteig gesamt</dt><dd>{fmt(calculator.result.preFerment.totalWeight)} g</dd></div>
           </dl>
           <p class="note">
@@ -309,7 +343,7 @@ async function shareUrl() {
             <div><dt>Mehl</dt><dd>{fmt(calculator.result.mainDough.flour)} g</dd></div>
             <div><dt>Wasser</dt><dd>{fmt(calculator.result.mainDough.water)} g</dd></div>
             <div><dt>Salz</dt><dd>{fmt(calculator.result.mainDough.salt, 1)} g</dd></div>
-            <div><dt>Hefe</dt><dd>{fmt(calculator.result.mainDough.yeast, 3)} g</dd></div>
+            <div><dt>Hefe</dt><dd>{formatYeast(calculator.result.mainDough.yeast, calculator.input.yeastType)}</dd></div>
           </dl>
         </Card>
       {/if}
@@ -331,6 +365,11 @@ async function shareUrl() {
             {calculator.result.ballingTime.hours} h bei {calculator.result.ballingTime.temp} °C
           </li>
         </ol>
+        <div class="schedule-actions">
+          <Button onclick={startMaturazioneTimer} disabled={starting}>
+            {starting ? 'Starte…' : '⏱ Timer starten'}
+          </Button>
+        </div>
       </Card>
 
       {#if calculator.result.warnings.length}
@@ -421,6 +460,11 @@ async function shareUrl() {
     margin: -0.25rem 0 var(--space-2);
     font-size: var(--text-xs);
     color: var(--color-text-muted);
+  }
+  .schedule-actions {
+    margin-top: var(--space-3);
+    display: flex;
+    justify-content: flex-end;
   }
   .actions {
     display: flex;

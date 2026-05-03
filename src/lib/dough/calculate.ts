@@ -179,7 +179,7 @@ function defaultPreFermentRest(type: PreFermentType): { hours: number; temp: num
   }
 }
 
-interface MaturationSplit {
+export interface MaturationSplit {
   bulk: { hours: number; temp: number };
   coldRetard?: { hours: number; temp: number };
   balling: { hours: number; temp: number };
@@ -190,7 +190,7 @@ interface MaturationSplit {
 // Warm (≥16 °C): klassisch lange Stockgare (2/3) + kürzere Stückgare (1/3);
 // bei sehr kurzen Garezeiten (≤6 h) 50/50.
 // Kalt (<16 °C): kurze warme Stockphase, lange Kühlschrank-Reife, warme Stückgare.
-function splitMaturation(total: number, temp: number): MaturationSplit {
+export function splitMaturation(total: number, temp: number): MaturationSplit {
   if (temp >= 16) {
     if (total <= 6) {
       const bulk = Math.max(1, Math.round(total / 2));
